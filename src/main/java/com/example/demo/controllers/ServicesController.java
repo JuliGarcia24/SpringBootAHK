@@ -62,8 +62,19 @@ public class ServicesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceResponseDTO> modifyService(@RequestBody ServiceDTO serviceDTO){
-        return null;
+    public ResponseEntity<ServiceResponseDTO> modifyService(@RequestBody ServiceDTO serviceDTO, @PathVariable int id){
+        Optional<Service> service = this.serviceRepository.findById(Long.valueOf(id));
+
+        if(service.isEmpty()){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        service.get().setName(serviceDTO.getName());
+        service.get().setIcon(serviceDTO.getIcon());
+        this.serviceRepository.save(service.get());
+
+        return new ResponseEntity<>(ServiceResponseDTO.createFrom(service.get()), HttpStatus.OK);
+
     }
 
 }
